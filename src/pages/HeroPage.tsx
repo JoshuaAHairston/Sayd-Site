@@ -38,7 +38,10 @@ export default function HeroPage() {
   return (
     // the white/black backdrop is what's revealed as the scene zooms past —
     // it matches the years page background so the hand-off is seamless
-    <main className="relative h-dvh w-full overflow-hidden bg-white">
+    <main
+      data-backdrop={zooming ? "zooming" : "dark"}
+      className="relative h-dvh w-full overflow-hidden bg-white"
+    >
       <ZoomThroughTransition
         active={zooming}
         onDone={() => navigate("/years", { state: { fromHero: true } })}

@@ -23,7 +23,7 @@ export default function MonthPage() {
   const next = m === 12 ? { y: y + 1, m: 1 } : { y, m: m + 1 }
 
   return (
-    <main className="bg-black">
+    <main data-backdrop="dark" className="bg-black">
       {/* "View days" and the previous/next links both arrive here through black */}
       <PageFadeIn colorClass="bg-black" />
       {back.overlay}
