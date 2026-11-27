@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+html {
+  /* light-only site: keep scrollbars and form controls light on dark-mode devices */
+  color-scheme: light;
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  background: #fff;
+  color: #171717;
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
