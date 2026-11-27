@@ -27,8 +27,11 @@ export function useFadeNavigate(colorClass: string) {
   // a plain boolean would leave the overlay covering the new page.
   const [leavingFrom, setLeavingFrom] = useState<string | null>(null)
   const leaving = leavingFrom === location.key
-  // phone edges switch to the destination colour as soon as the fade starts
-  usePhoneEdges(leaving ? (colorClass === "bg-black" ? BLACK : WHITE) : null)
+  // phone edges fade to the destination colour in step with the overlay below
+  usePhoneEdges(leaving ? (colorClass === "bg-black" ? BLACK : WHITE) : null, {
+    duration: FADE_OUT_S,
+    ease: "easeInOut",
+  })
 
   const fadeTo = (to: string) => {
     if (leaving) return

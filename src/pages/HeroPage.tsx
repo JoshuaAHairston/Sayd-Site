@@ -26,9 +26,9 @@ export default function HeroPage() {
   const [zooming, setZooming] = useState(false)
   const images = getHeroImages()
   const [endingOnWhite, setEndingOnWhite] = useState(false)
-  usePhoneEdges(endingOnWhite ? WHITE : BLACK)
+  usePhoneEdges(endingOnWhite ? WHITE : BLACK, endingOnWhite ? { duration: 0.54 } : undefined)
 
-  // the zoom fades to white over its last 30% (of 1800ms): switch the edges then
+  // the zoom fades to white over its last 30% (of 1800ms): fade the edges with it
   useEffect(() => {
     if (!zooming) return
     const timer = window.setTimeout(() => setEndingOnWhite(true), 1260)
