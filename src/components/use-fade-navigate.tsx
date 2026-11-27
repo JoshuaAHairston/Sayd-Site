@@ -41,6 +41,8 @@ export function useFadeNavigate(colorClass: string) {
         // portalled to <body> so a transformed ancestor can't trap `fixed`
         <motion.div
           aria-hidden
+          // lets index.css fade the areas behind a phone's status bar and toolbar too
+          data-backdrop={colorClass === "bg-black" ? "fading-dark" : "fading-light"}
           className={`fixed inset-0 z-[100] ${colorClass}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

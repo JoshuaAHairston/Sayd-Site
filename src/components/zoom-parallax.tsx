@@ -6,41 +6,55 @@
 import * as React from "react"
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react"
 
-/** Tile layout from the original stylesheet: offset from centre + size. */
-const TILES: { top: string; left: string; width: string; height: string; scaleTo: number }[] = [
-  { top: "0vh", left: "0vw", width: "25vw", height: "25vh", scaleTo: 4 }, // centre
-  { top: "-30vh", left: "5vw", width: "35vw", height: "30vh", scaleTo: 5 },
-  { top: "-10vh", left: "-25vw", width: "20vw", height: "45vh", scaleTo: 6 },
-  { top: "0vh", left: "27.5vw", width: "25vw", height: "25vh", scaleTo: 5 },
-  { top: "27.5vh", left: "5vw", width: "20vw", height: "25vh", scaleTo: 6 },
-  { top: "27.5vh", left: "-22.5vw", width: "30vw", height: "25vh", scaleTo: 8 },
-  { top: "22.5vh", left: "25vw", width: "15vw", height: "15vh", scaleTo: 9 },
+/** Tile layout from the original stylesheet: offset from centre (vw / vh) + size. */
+const TILES: { top: number; left: number; width: number; height: number; scaleTo: number }[] = [
+  { top: 0, left: 0, width: 25, height: 25, scaleTo: 4 }, // centre
+  { top: -30, left: 5, width: 35, height: 30, scaleTo: 5 },
+  { top: -10, left: -25, width: 20, height: 45, scaleTo: 6 },
+  { top: 0, left: 27.5, width: 25, height: 25, scaleTo: 5 },
+  { top: 27.5, left: 5, width: 20, height: 25, scaleTo: 6 },
+  { top: 27.5, left: -22.5, width: 30, height: 25, scaleTo: 8 },
+  { top: 22.5, left: 25, width: 15, height: 15, scaleTo: 9 },
 ]
 
 function Tile({
   src,
   tile,
+  drawScale,
   progress,
   children,
 }: {
   src: string
   tile: (typeof TILES)[number]
+  /** how much bigger than its starting size the tile is drawn */
+  drawScale: number
   progress: MotionValue<number>
   children?: React.ReactNode
 }) {
-  const scale = useTransform(progress, [0, 1], [1, tile.scaleTo])
+  const zoom = useTransform(progress, [0, 1], [1, tile.scaleTo])
+  const x = useTransform(zoom, (z) => `${tile.left * z}vw`)
+  const y = useTransform(zoom, (z) => `${tile.top * z}vh`)
+  const scale = useTransform(zoom, (z) => z / drawScale)
+  const width = tile.width * drawScale
+  const height = tile.height * drawScale
   return (
-    // No will-change-transform here: it makes the browser draw each tile once at
-    // its small starting size and stretch that bitmap up to 9×, so photos turn
-    // blurry and blocky. Without it, the browser redraws at the current scale.
-    <motion.div style={{ scale }} className="absolute inset-0 flex items-center justify-center">
-      <div
-        className="relative overflow-hidden"
-        style={{ top: tile.top, left: tile.left, width: tile.width, height: tile.height }}
-      >
-        <img src={src} alt="" draggable={false} className="h-full w-full object-cover" />
-        {children}
-      </div>
+    // will-change lets the phone's GPU move and resize the tile without redrawing
+    // it on every scroll frame. The tile is drawn larger and scaled down, so it
+    // stays sharp as it grows.
+    <motion.div
+      className="absolute left-1/2 top-1/2 overflow-hidden will-change-transform"
+      style={{
+        width: `${width}vw`,
+        height: `${height}vh`,
+        marginLeft: `${-width / 2}vw`,
+        marginTop: `${-height / 2}vh`,
+        x,
+        y,
+        scale,
+      }}
+    >
+      <img src={src} alt="" draggable={false} className="h-full w-full object-cover" />
+      {children}
     </motion.div>
   )
 }
@@ -70,14 +84,15 @@ export function ZoomParallax({ images, title, eyebrow, runway = "200vh" }: ZoomP
       <div className="sticky top-0 h-screen overflow-hidden bg-black">
         {TILES.map((tile, i) =>
           srcs[i] ? (
-            <Tile key={i} src={srcs[i]} tile={tile} progress={scrollYProgress}>
+            // the centre tile is drawn full screen; the rest leave the screen, so 2× is enough
+            <Tile key={i} src={srcs[i]} tile={tile} drawScale={i === 0 ? tile.scaleTo : 2} progress={scrollYProgress}>
               {i === 0 && (title || eyebrow) && (
                 <motion.div
                   style={{ opacity: labelOpacity }}
                   className="absolute inset-0 flex flex-col items-center justify-center bg-black/35 text-center text-white"
                 >
-                  {eyebrow && <p className="text-[1.4vh] uppercase tracking-[0.3em] text-white/80">{eyebrow}</p>}
-                  {title && <p className="text-[3.4vh] font-semibold leading-tight tracking-tight">{title}</p>}
+                  {eyebrow && <p className="text-[5.6vh] uppercase tracking-[0.3em] text-white/80">{eyebrow}</p>}
+                  {title && <p className="text-[13.6vh] font-semibold leading-tight tracking-tight">{title}</p>}
                 </motion.div>
               )}
             </Tile>

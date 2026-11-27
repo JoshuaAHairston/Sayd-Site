@@ -26,3 +26,16 @@ html:has([data-backdrop="zooming"]) body {
   transition: background-color 540ms linear 1260ms;
 }
 
+
+/* page-to-page fades: change the page background along with the overlay (500ms,
+   see FADE_OUT_S). These come last so they win over the current page's colour. */
+html:has([data-backdrop="fading-dark"]) body {
+  background: #000;
+  transition: background-color 500ms ease-in-out;
+}
+
+html:has([data-backdrop="fading-light"]),
+html:has([data-backdrop="fading-light"]) body {
+  background: #fff;
+  transition: background-color 500ms ease-in-out;
+}
