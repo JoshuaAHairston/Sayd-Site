@@ -13,29 +13,3 @@ body {
   font-family: system-ui, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-
-/* Phones colour the areas behind the status bar and browser toolbar from the
-   page background, so dark pages need a dark background to look seamless. */
-html:has([data-backdrop="dark"]),
-html:has([data-backdrop="dark"]) body {
-  background: #000;
-}
-
-/* the hero's zoom ends on white: follow its fade (last 30% of 1800ms) */
-html:has([data-backdrop="zooming"]) body {
-  transition: background-color 540ms linear 1260ms;
-}
-
-
-/* page-to-page fades: change the page background along with the overlay (500ms,
-   see FADE_OUT_S). These come last so they win over the current page's colour. */
-html:has([data-backdrop="fading-dark"]) body {
-  background: #000;
-  transition: background-color 500ms ease-in-out;
-}
-
-html:has([data-backdrop="fading-light"]),
-html:has([data-backdrop="fading-light"]) body {
-  background: #fff;
-  transition: background-color 500ms ease-in-out;
-}

@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router"
 import PageFadeIn from "../components/page-fade-in"
+import { BLACK, usePhoneEdges } from "../components/phone-edge-color"
 import { useFadeNavigate } from "../components/use-fade-navigate"
 import TimelineScrubber from "../components/timeline-scrubber-days"
 import ZoomParallax from "../components/zoom-parallax"
@@ -15,6 +16,7 @@ export default function MonthPage() {
   const y = Number(year)
   const m = Number(month) // 1-12 from the URL
   const valid = /^\d{4}$/.test(year ?? "") && isKnownYear(y) && /^\d{1,2}$/.test(month ?? "") && m >= 1 && m <= 12
+  usePhoneEdges(valid ? BLACK : null)
   if (!valid) return <NotFoundPage />
 
   const stops = getStops(y, m)
@@ -23,7 +25,7 @@ export default function MonthPage() {
   const next = m === 12 ? { y: y + 1, m: 1 } : { y, m: m + 1 }
 
   return (
-    <main data-backdrop="dark" className="bg-black">
+    <main className="bg-black">
       {/* "View days" and the previous/next links both arrive here through black */}
       <PageFadeIn colorClass="bg-black" />
       {back.overlay}

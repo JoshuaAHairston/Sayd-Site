@@ -2,6 +2,7 @@ import { useState, type MouseEvent, type ReactNode } from "react"
 import { createPortal } from "react-dom"
 import { useLocation, useNavigate } from "react-router"
 import { motion, useReducedMotion } from "motion/react"
+import { BLACK, WHITE, usePhoneEdges } from "./phone-edge-color"
 
 /** Seconds for the outgoing page to fade to a solid colour. */
 export const FADE_OUT_S = 0.5
@@ -26,6 +27,8 @@ export function useFadeNavigate(colorClass: string) {
   // a plain boolean would leave the overlay covering the new page.
   const [leavingFrom, setLeavingFrom] = useState<string | null>(null)
   const leaving = leavingFrom === location.key
+  // phone edges switch to the destination colour as soon as the fade starts
+  usePhoneEdges(leaving ? (colorClass === "bg-black" ? BLACK : WHITE) : null)
 
   const fadeTo = (to: string) => {
     if (leaving) return
@@ -41,8 +44,6 @@ export function useFadeNavigate(colorClass: string) {
         // portalled to <body> so a transformed ancestor can't trap `fixed`
         <motion.div
           aria-hidden
-          // lets index.css fade the areas behind a phone's status bar and toolbar too
-          data-backdrop={colorClass === "bg-black" ? "fading-dark" : "fading-light"}
           className={`fixed inset-0 z-[100] ${colorClass}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

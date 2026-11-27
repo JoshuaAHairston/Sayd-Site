@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
 import { motion, stagger, useAnimate, useReducedMotion } from "motion/react"
+import { BLACK, WHITE, usePhoneEdges } from "../components/phone-edge-color"
 import Floating, { FloatingElement } from "../components/parallax-floating"
 import { LiquidMetalButton } from "../components/liquid-metal-button"
 import ZoomThroughTransition from "../components/zoom-through-transition"
@@ -24,6 +25,15 @@ export default function HeroPage() {
   const reduceMotion = useReducedMotion()
   const [zooming, setZooming] = useState(false)
   const images = getHeroImages()
+  const [endingOnWhite, setEndingOnWhite] = useState(false)
+  usePhoneEdges(endingOnWhite ? WHITE : BLACK)
+
+  // the zoom fades to white over its last 30% (of 1800ms): switch the edges then
+  useEffect(() => {
+    if (!zooming) return
+    const timer = window.setTimeout(() => setEndingOnWhite(true), 1260)
+    return () => window.clearTimeout(timer)
+  }, [zooming])
 
   useEffect(() => {
     animate("img", { opacity: [0, 1] }, { duration: 0.5, delay: stagger(0.15) })
@@ -38,10 +48,7 @@ export default function HeroPage() {
   return (
     // the white/black backdrop is what's revealed as the scene zooms past —
     // it matches the years page background so the hand-off is seamless
-    <main
-      data-backdrop={zooming ? "zooming" : "dark"}
-      className="relative h-dvh w-full overflow-hidden bg-white"
-    >
+    <main className="relative h-dvh w-full overflow-hidden bg-white">
       <ZoomThroughTransition
         active={zooming}
         onDone={() => navigate("/years", { state: { fromHero: true } })}
