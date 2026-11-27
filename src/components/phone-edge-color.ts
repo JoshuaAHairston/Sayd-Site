@@ -2,12 +2,13 @@
 
 import { useLayoutEffect } from "react"
 
-export const WHITE = "#ffffff"
-export const BLACK = "#000000"
+// the edges only go between black and white, so a colour is a grey level
+export const WHITE = 255
+export const BLACK = 0
 
 /** How to get to a colour; without `duration` (seconds) the change is immediate. */
 export type EdgeTransition = { duration?: number; ease?: "linear" | "easeInOut" }
-export type EdgeRequest = EdgeTransition & { color: string }
+export type EdgeRequest = EdgeTransition & { color: number }
 
 const DEFAULT_REQUEST: EdgeRequest = { color: WHITE }
 let requests: EdgeRequest[] = []
@@ -34,9 +35,9 @@ export function subscribeEdgeColor(listener: () => void) {
 }
 
 /** While mounted with a colour, asks for that edge colour. The latest request wins. */
-export function usePhoneEdges(color: string | null, { duration, ease }: EdgeTransition = {}) {
+export function usePhoneEdges(color: number | null, { duration, ease }: EdgeTransition = {}) {
   useLayoutEffect(
-    () => (color ? requestEdgeColor({ color, duration, ease }) : undefined),
+    () => (color !== null ? requestEdgeColor({ color, duration, ease }) : undefined),
     [color, duration, ease],
   )
 }

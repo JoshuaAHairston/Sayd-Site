@@ -5,7 +5,9 @@
 // reliably notice a background that is only changed through CSS. So this renders
 // a thin fixed strip at each edge, inserted afresh whenever the colour changes.
 // A CSS transition wouldn't be noticed either, so fades are stepped in JS, one
-// new colour per frame, to stay in time with the page.
+// new colour per frame, to stay in time with the page. The grey level is stepped
+// evenly, the same way a fading overlay blends; motion's own colour mixing
+// follows a different curve and visibly trails the page.
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { animate } from "motion/react"
@@ -14,9 +16,10 @@ import { getEdgeRequest, subscribeEdgeColor } from "./phone-edge-color"
 /** Render once, in Layout. */
 export default function PhoneEdges() {
   const target = useSyncExternalStore(subscribeEdgeColor, getEdgeRequest)
-  const [color, setColor] = useState(target.color)
+  const [level, setLevel] = useState(target.color)
   // where the next fade starts from, even if the last one was interrupted
-  const current = useRef(color)
+  const current = useRef(level)
+  const color = `rgb(${level}, ${level}, ${level})`
 
   useEffect(() => {
     const controls = animate(current.current, target.color, {
@@ -24,7 +27,7 @@ export default function PhoneEdges() {
       ease: target.ease ?? "linear",
       onUpdate: (value) => {
         current.current = value
-        setColor(value)
+        setLevel(Math.round(value))
       },
     })
     return () => controls.stop()
