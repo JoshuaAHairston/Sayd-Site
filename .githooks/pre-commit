@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Removes GPS data from photos being committed.
+# Enable once per clone: git config core.hooksPath .githooks
+set -euo pipefail
+
+# Git apps may not load your shell's PATH, so add the Homebrew locations.
+PATH="$PATH:/opt/homebrew/bin:/usr/local/bin"
+
+cd "$(git rev-parse --show-toplevel)"
+
+# Photos that are added, copied, modified or renamed in this commit.
+photos=()
+while IFS= read -r -d '' file; do
+  case "$(printf '%s' "$file" | tr '[:upper:]' '[:lower:]')" in
+    *.jpg | *.jpeg | *.png | *.webp | *.avif | *.heic) photos+=("$file") ;;
+  esac
+done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+
+[ "${#photos[@]}" -eq 0 ] && exit 0
+
+if ! command -v exiftool >/dev/null 2>&1; then
+  echo "Commit stopped: ExifTool is needed to remove GPS data from photos." >&2
+  echo "Install it with: brew install exiftool" >&2
+  exit 1
+fi
+
+for file in "${photos[@]}"; do
+  if ! exiftool -q -overwrite_original -gps:all= -xmp:geotag= "./$file"; then
+    echo "Commit stopped: could not remove GPS data from $file" >&2
+    exit 1
+  fi
+  # --literal-pathspecs: file names may contain characters such as *
+  git --literal-pathspecs add -- "$file"
+done

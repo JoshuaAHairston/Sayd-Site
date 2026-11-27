@@ -1,7 +1,7 @@
 # Components & pages
 
 What each file in `src/` does, how they connect, and the props you can pass.
-For setup, routes and adding photos, see the [README](../README.md).
+For setup, routes and adding photos, see the [development guide](DEVELOPMENT.md).
 
 ## How the site flows
 
