@@ -61,6 +61,8 @@ function Odometer({ value, size, suffix }: { value: number; size: number; suffix
 
 export interface TimelinePhoto {
   src: string
+  /** tiny pre-blurred copy for backgrounds; without it `src` is blurred with CSS */
+  backdrop?: string
   title: string
 }
 
@@ -95,10 +97,15 @@ const MONTH_NAMES = [
  * portrait or 4:3 photo in the wide frame) is filled with a blurred, enlarged
  * copy of the same photo instead of bars.
  */
-function WholePhoto({ src, alt }: { src: string; alt: string }) {
+function WholePhoto({ src, backdrop, alt }: { src: string; backdrop?: string; alt: string }) {
   return (
     <>
-      <img src={src} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl brightness-75" />
+      <img
+        src={backdrop ?? src}
+        alt=""
+        aria-hidden
+        className={cn("absolute inset-0 h-full w-full scale-110 object-cover brightness-75", !backdrop && "blur-2xl")}
+      />
       <img src={src} alt={alt} className="absolute inset-0 h-full w-full object-contain" />
     </>
   )
@@ -247,7 +254,7 @@ export function TimelineScrubber({ stops, year, month, heading, className }: Tim
         ))}
         {(base.stop !== shown.stop || base.photo !== shown.photo) && (
           <div key={`base-${basePhoto.src}`} aria-hidden className="absolute inset-0">
-            <WholePhoto src={basePhoto.src} alt="" />
+            <WholePhoto src={basePhoto.src} backdrop={basePhoto.backdrop} alt="" />
           </div>
         )}
         <motion.div
@@ -258,7 +265,7 @@ export function TimelineScrubber({ stops, year, month, heading, className }: Tim
           transition={{ duration: 0.9, ease: [0.42, 0, 0, 1] }}
           onAnimationComplete={() => setBase(shownRef.current)}
         >
-          <WholePhoto src={photo.src} alt={photo.title} />
+          <WholePhoto src={photo.src} backdrop={photo.backdrop} alt={photo.title} />
         </motion.div>
         <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-black/45 via-transparent to-black/20" />
 

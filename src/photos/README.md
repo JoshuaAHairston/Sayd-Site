@@ -15,11 +15,11 @@ Name each file after the day it was taken, optionally followed by a title:
   (`13-1.jpg`, `13-2.jpg`, `13-10.jpg`) sorts by number and keeps the default
   "January 13" title. The scrubber still has one stop per day, and days with
   more than one photo get back/forward arrows (also swipe, or Up/Down keys).
-- Resize to about 1600px wide and compress (WebP) before adding. Every photo in a
-  month is preloaded when you open that month.
+- No need to resize before adding. Every photo in a month is preloaded when you
+  open that month.
 - A month with no files shows placeholder photos.
-- The year-page cards use small thumbnails (640px WebP) made automatically at build
-  time, so you don't need to make your own. Month pages always use your original file.
+- Smaller WebP copies are made automatically at build time: 640px for the year-page
+  cards and 1600px for month pages. Your original files aren't published.
 - Hero photos (`src/photos/hero/`) are likewise served as 800px WebP copies, since
   they're shown small. Upper- or lowercase extensions both work (`.JPEG`, `.jpg`).
 

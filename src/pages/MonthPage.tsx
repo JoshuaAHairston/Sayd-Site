@@ -38,7 +38,7 @@ export default function MonthPage() {
           aria-hidden
           className="absolute -inset-1 translate-y-1 rounded-full bg-linear-to-r from-yellow-300 via-amber-200 to-pink-400 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-90 group-focus-visible:opacity-90"
         />
-        <span className="relative block rounded-full border border-white/30 bg-black/60 px-4 py-2 text-sm text-white backdrop-blur transition-colors group-hover:border-white/60 group-focus-visible:border-white/60">
+        <span className="relative block rounded-full border border-white/30 bg-black/60 px-4 py-2 text-sm text-white transition-colors md:backdrop-blur group-hover:border-white/60 group-focus-visible:border-white/60">
           ← {y}
         </span>
       </Link>
@@ -57,10 +57,10 @@ export default function MonthPage() {
       <section id="days" className="relative flex min-h-screen flex-col overflow-hidden px-4 py-16 md:px-10">
         {stops[0] && (
           <img
-            src={stops[0].photos[0].src}
+            src={stops[0].photos[0].backdrop ?? stops[0].photos[0].src}
             alt=""
             aria-hidden
-            className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl"
+            className={`absolute inset-0 h-full w-full scale-110 object-cover opacity-60 ${stops[0].photos[0].backdrop ? "" : "blur-2xl"}`}
           />
         )}
         <div className="absolute inset-0 bg-black/40" />

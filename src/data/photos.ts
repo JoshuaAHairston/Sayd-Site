@@ -19,14 +19,20 @@ Name each file after the day it was taken, optionally followed by a title:
 
 Several photos can share a day: 13-cake.jpg, 13-candles.jpg. They are grouped
 under that day and shown in filename order (13-1, 13-2, ... 13-10 sort by number).
-Resize to ~1600px wide (WebP) first.
 --------------------------------------------------------------------------- */
 
-// Plain imports (no ?query), so imagetools leaves the originals untouched — it only
-// processes image imports that carry a query, like the thumbnails below.
+// Month pages use 1600px WebP copies (made at build time by vite-imagetools).
+// Phone originals are ~12 megapixels, which makes scrolling lag badly on phones.
 const files = import.meta.glob<string>(
   "../photos/*/*/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}",
-  { eager: true, import: "default" },
+  { eager: true, query: "?w=1600&format=webp&withoutEnlargement=true", import: "default" },
+);
+
+// Tiny pre-blurred copies for the soft backgrounds, so the phone doesn't have to
+// run a large CSS blur while scrolling.
+const backdropFiles = import.meta.glob<string>(
+  "../photos/*/*/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}",
+  { eager: true, query: "?w=64&blur=2&format=webp", import: "default" },
 );
 
 // The same files again, as small WebP copies for the year-page month cards
@@ -68,7 +74,7 @@ for (const path of Object.keys(files).sort((a, b) => a.localeCompare(b, undefine
   const list = (realStops[key] ??= []);
   // a purely numeric suffix (13-2.jpg) is just an ordering hint, not a title
   const title = slug && !/^\d+$/.test(slug.trim()) ? titleFromSlug(slug) : `${MONTH_NAMES[month - 1]} ${day}`;
-  const photo = { src: files[path], title };
+  const photo = { src: files[path], backdrop: backdropFiles[path], title };
   const existing = list.find((s) => s.day === day);
   if (existing) existing.photos.push(photo);
   else list.push({ day, photos: [photo] });
